@@ -15,10 +15,13 @@ RUN apt-get update && apt-get install -y git \
 RUN apt install -y libprotobuf-dev protobuf-compiler
 
  
-# Create a Catkin workspace and clone TurtleBot3 repos
+# Create a Catkin workspace and clone Hector repos
 RUN mkdir -p /catkin_ws/src \
  && cd catkin_ws/src \ 
- && git clone -b noetic-devel https://github.com/tu-darmstadt-ros-pkg/hector_slam.git 
+ && git clone -b noetic-devel https://github.com/tu-darmstadt-ros-pkg/hector_slam.git
+
+COPY  ./ros_mapping_launch/ /catkin_ws/src/hector_slam/hector_slam_launch/launch/ros_mapping_launch/
+
 RUN source /opt/ros/noetic/setup.bash \
  && cd catkin_ws \
  && rosdep fix-permissions \
