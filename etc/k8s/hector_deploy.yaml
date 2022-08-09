@@ -1,0 +1,52 @@
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: is-ros-mapping-config
+  namespace: default
+data:
+  config: |-
+    map_resolution: 0.1
+    map_size: 512
+    map_start_x: 0.5
+    map_start_y: 0.5
+    map_multi_res_levels: 2
+    update_factor_free: 0.4
+    update_factor_occupied: 0.9 
+    map_update_distance_thresh: 0.4
+    map_update_angle_thresh: 0.06
+---
+
+apiVersion: extensions/v1beta1 
+kind: Deployment
+metadata:
+  name: "is-ros-mapping"
+spec:
+  replicas: 1 
+  template:
+    metadata:
+      labels:
+        app: is-ros-mapping
+    spec:
+      containers:
+      - name: service 
+        image: vinihernech/ros_mapping_microsservice:v1
+        args:
+          - roscore
+        env:
+        - name: ROS_MASTER_URI
+          value: http://10.10.1.16:11311
+        - name: ROS_IP
+          value: 10.10.3.188
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+          - name: options
+            mountPath: /catkin_ws/src/hector_slam/hector_slam_launch/launch/ros_mapping_launch/
+      hostNetwork: true
+      volumes:
+      - name: options
+        configMap:
+          name: is-ros-mapping-config
+          items:
+          - key: config
+            path: options.yaml
