@@ -1,42 +1,20 @@
-FROM nvidia_ros:latest
+FROM ros:noetic-ros-base
  
 # Change the default shell to Bash
 SHELL [ "/bin/bash" , "-c" ]
  
-# Install Git
-RUN apt-get update && apt-get install -y git \
- && apt-get install -y qtbase5-dev \
- && apt-get install -y qtdeclarative5-dev \
- && apt-get install -y --no-install-recommends apt-utils \
- && apt-get install -y cmake \
- && apt-get install -y ros-noetic-catkin python3-catkin-tools \ 
- && apt-get install -y build-essential
- 
-RUN apt install -y libprotobuf-dev protobuf-compiler
 
- 
-# Create a Catkin workspace and clone Hector repos
-RUN mkdir -p /catkin_ws/src \
- && cd catkin_ws/src \ 
- && git clone -b noetic-devel https://github.com/tu-darmstadt-ros-pkg/hector_slam.git
+RUN apt-get update && apt-get install -y ros-noetic-hector-slam
 
-COPY  ./ros_mapping_launch/ /catkin_ws/src/hector_slam/hector_slam_launch/launch/ros_mapping_launch/
+COPY  ./ros_mapping_launch/ /opt/ros/noetic/share/hector_slam_launch/launch
 
-RUN source /opt/ros/noetic/setup.bash \
- && cd catkin_ws \
- && rosdep fix-permissions \
- && rosdep update 
+RUN cd /opt/ros/noetic/share/hector_slam_launch/launch \
+ && mkdir -p /ros_mapping_config 
+
+COPY  ./ros_mapping_config/ /opt/ros/noetic/share/hector_slam_launch/launch/ros_mapping_config
+
+RUN source /opt/ros/noetic/setup.bash 
 
 
-# Build the Catkin workspace and ensure it's sourced
-RUN source /opt/ros/noetic/setup.bash \
- && cd catkin_ws/src \
- && catkin_init_workspace \
- && cd .. \ 
- && catkin_make
-
-RUN echo "source /catkin_ws/devel/setup.bash" >> ~/.bashrc
-
- 
 # Set the working folder at startup
-WORKDIR /catkin_ws
+WORKDIR /opt/ros/noetic/share/hector_slam_launch/launch
