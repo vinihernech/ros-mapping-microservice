@@ -101,17 +101,17 @@ def send_goal(pose):
     client.wait_for_result()
     
 
-def listener():
-    #rospy.Subscriber("/map_metadata", MapMetaData , callback)
-    #rospy.Subscriber("/map", OccupancyGrid , callback1)
-    map_data = rospy.wait_for_message("/map", OccupancyGrid, timeout = 5)
-    meta_data = rospy.wait_for_message("/map_metadata", MapMetaData, timeout = 5)
-    maprequestreply = MapRequestReply()
-    maprequestreply.width = meta_data.width
-    maprequestreply.height = meta_data.width
-    #print(meta_data.origin.position)
-    maprequestreply.map.extend(map_data.data)
-    return maprequestreply
+# def listener():
+#     #rospy.Subscriber("/map_metadata", MapMetaData , callback)
+#     #rospy.Subscriber("/map", OccupancyGrid , callback1)
+#     map_data = rospy.wait_for_message("/map", OccupancyGrid, timeout = 5)
+#     meta_data = rospy.wait_for_message("/map_metadata", MapMetaData, timeout = 5)
+#     maprequestreply = MapRequestReply()
+#     maprequestreply.width = meta_data.width
+#     maprequestreply.height = meta_data.width
+#     #print(meta_data.origin.position)
+#     maprequestreply.map.extend(map_data.data)
+#     return maprequestreply
 
 if __name__ == '__main__':
 
