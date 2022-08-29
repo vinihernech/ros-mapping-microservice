@@ -1,4 +1,3 @@
-
 syntax = "proto3";
 
 package is.robot;
@@ -26,3 +25,9 @@ message MapRequestReply{
     repeated int64 map = 6;
 
 }
+
+// se as mensagens já estão definidas, documenta-las de acordo com o padrao do IS e adicionar ao pacote is-msgs. 
+// se o pacote é uma adição ao is, deve seguir os padrões do mesmo. Veja nos outros pacotes onde colocar estes arquivos .proto
+//ref: https://github.com/labviros/gt-mobilysa-main [de preferencia]
+//ref: https://github.com/labviros/is-skeletons-3d  [caso queira seguir o novo padrão]
+
