@@ -15,15 +15,23 @@ from is_wire.rpc import ServiceProvider, LogInterceptor
 from google.protobuf.empty_pb2 import Empty
 from maprequest_pb2 import MapRequest, MapRequestReply
 from streamChannel import StreamChannel
+from std_srvs.srv import Trigger, TriggerRequest
+from utils import rotationZ_matrix, isframe_to_robotframe
+import roslaunch
 
 
-def rotationZ_matrix(angle_rad):
-  R = np.array([ 
-               [cos(angle_rad), -sin(angle_rad), 0],
-               [sin(angle_rad),  cos(angle_rad), 0],
-               [0             ,  0             , 1]
-            ])
-  return R
+def reset_map():
+   rospy.wait_for_service('/reset_map')
+   resetMap = rospy.ServiceProxy('/reset_map', Trigger)
+   sos = TriggerRequest()
+   result = resetMap(sos)
+
+def save_map():
+   uuid = roslaunch.rlutil.get_or_generate_uuid(None, False)
+   roslaunch.configure_logging(uuid)
+   launch = roslaunch.parent.ROSLaunchParent(uuid, ["/home/labsea6/Documents/ros-mapping-microservice/etc/save_map.launch/test.launch"])
+   launch.start()
+   launch.spin()
 
 def get_robot_pose(config):
     channel_recontruction = StreamChannel(config['broker_uri'])
@@ -43,50 +51,26 @@ def get_robot_pose(config):
         return message
 
 
-def isframe_to_robotframe(pathList, initialPose):
-    initialPose_yaw = initialPose[2]
-    rotateMatriz = rotationZ_matrix(initialPose_yaw)
-    rotateMatriz_inv = np.linalg.inv(rotateMatriz)
-    pathListConvert = []
-    for x, y, yaw in pathList:
-        yaw_rad = (180*yaw)/pi
-        pointConvert =  (
-                        rotateMatriz_inv@(np.array([x, y, yaw_rad]) - initialPose)
-                        )
-        pathListConvert.append([pointConvert[0],
-                            pointConvert[1], 
-                            (pointConvert[2]*pi/180)])
-
-    return pathListConvert
-
-    
-   
-
 def get_is_points(message,ctx):
 
     poses = list(message.poses)
     #initialPose = get_robot_pose(config)
-    initialPose = [0.5,0,0]
-    #print(poses)
+    initialPose = [0,0,0]
     log.info(f"new map request ID: {message.id}")
     log.info("start mapping ...")
+    reset_map()
     for i in range(len(poses)):
         x = poses[i].position.x
         y = poses[i].position.y
         theta = poses[i].orientation.yaw
         pose = [x,y,theta]
-        #print(pose)
         pose = isframe_to_robotframe([pose],initialPose)
         send_goal(pose[0])
-        #print(pose[0])
-    map_reply = listener()
-    log.info("map completed successfully")
-    #print(map_reply)
+        save_map()
+    #map_reply = listener()
+    log.info("map completed successfully") 
+    return Status(StatusCode.OK)
 
-    return map_reply
-  
-
-    
 def send_goal(pose):
     goal = MoveBaseGoal()
     goal.target_pose.header.frame_id = 'map' 
@@ -116,7 +100,7 @@ def send_goal(pose):
 if __name__ == '__main__':
 
     try:
-        with open(r'../etc/config.yaml') as file:
+        with open(r'../etc/config/config.yaml') as file:
             config = yaml.load(file, Loader=yaml.FullLoader)
     except:
             print('Unable to load config file')
@@ -129,7 +113,6 @@ if __name__ == '__main__':
         log.info("Can't connect to broker")
 
     robot_id = config['robot_id']
-    #map_resolution = config['map_resolution']
     topic = "IsRosMapping.{}.MapRequest".format(robot_id)
     subscription = Subscription(channel)   
     rospy.init_node('send_client_goal')
@@ -145,7 +128,7 @@ if __name__ == '__main__':
         topic = topic,
         function = get_is_points,
         request_type = MapRequest,
-        reply_type = MapRequestReply)
+        reply_type = Empty)
 
     provider.run()
   
