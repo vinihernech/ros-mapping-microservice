@@ -32,7 +32,7 @@ def path_task_robot(path, config):
 
 if __name__ == '__main__':
     try:
-        with open(r'../etc/config.yaml') as file:
+        with open(r'../etc/config/config.yaml') as file:
             config = yaml.load(file, Loader=yaml.FullLoader)
     except:
             print('Unable to load config file')

@@ -7,7 +7,7 @@
   <param name="/use_sim_time" value="false"/>
 
 
-  <include file="$(find hector_slam_launch)/launch/ros_mapping_launch/vini_map_config.launch"/>
+  <include file="$(find hector_slam_launch)/launch/ros_mapping_launch/map_config.launch"/>
 
   <include file="$(find hector_geotiff_launch)/launch/geotiff_mapper.launch">
     <arg name="trajectory_source_frame_name" value="scanmatcher_frame"/>

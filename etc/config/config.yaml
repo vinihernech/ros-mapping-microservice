@@ -1,5 +1,4 @@
 broker_uri: "amqp://10.10.3.188:30000"
 robot_id: 0
-map_resolution: 0.1
 aruco_id: 5
 
