@@ -4,20 +4,20 @@ import argparse
 import yaml
 import sys
 import numpy as np
-from nav_msgs.msg import OccupancyGrid, MapMetaData
 from math import cos, sin, pi
-from is_msgs.camera_pb2 import FrameTransformation
+import roslaunch
+from nav_msgs.msg import OccupancyGrid, MapMetaData
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal, MoveBaseFeedback, MoveBaseResult
 from tf.transformations import quaternion_from_euler
 from is_wire.core import Channel, Message, Subscription, StatusCode, Status, Logger
 from is_msgs.robot_pb2 import RobotTaskRequest
+from is_msgs.camera_pb2 import FrameTransformation
 from is_wire.rpc import ServiceProvider, LogInterceptor
 from google.protobuf.empty_pb2 import Empty
+from std_srvs.srv import Trigger, TriggerRequest
 from maprequest_pb2 import MapRequest, MapRequestReply
 from streamChannel import StreamChannel
-from std_srvs.srv import Trigger, TriggerRequest
 from utils import rotationZ_matrix, isframe_to_robotframe
-import roslaunch
 
 
 def reset_map():
@@ -52,7 +52,6 @@ def get_robot_pose(config):
 
 
 def get_is_points(message,ctx):
-
     poses = list(message.poses)
     #initialPose = get_robot_pose(config)
     initialPose = [0,0,0]
