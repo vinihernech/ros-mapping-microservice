@@ -9,12 +9,14 @@ import roslaunch
 from nav_msgs.msg import OccupancyGrid, MapMetaData
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal, MoveBaseFeedback, MoveBaseResult
 from tf.transformations import quaternion_from_euler
+
 from is_wire.core import Channel, Message, Subscription, StatusCode, Status, Logger
 from is_msgs.robot_pb2 import RobotTaskRequest
 from is_msgs.camera_pb2 import FrameTransformation
 from is_wire.rpc import ServiceProvider, LogInterceptor
 from google.protobuf.empty_pb2 import Empty
 from std_srvs.srv import Trigger, TriggerRequest
+
 from maprequest_pb2 import MapRequest, MapRequestReply
 from streamChannel import StreamChannel
 from utils import rotationZ_matrix, isframe_to_robotframe
@@ -33,12 +35,26 @@ def save_map():
    launch.start()
    launch.spin()
 
+
+def send_goal(pose):
+    goal = MoveBaseGoal()
+    goal.target_pose.header.frame_id = 'map' 
+    goal.target_pose.pose.position.x = pose[0]
+    goal.target_pose.pose.position.y = pose[1]
+    radian = pose[2]*(math.pi/180)
+    quaternion = quaternion_from_euler(0, 0, radian)
+    goal.target_pose.pose.orientation.z = quaternion[2]
+    goal.target_pose.pose.orientation.w = quaternion[3]
+    client.send_goal(goal)
+    log.info('setting final position task to  x:{:.2f}, y:{:.2f}, theta: {:.2f}'.format(pose[0],pose[1],pose[2]))
+    client.wait_for_result()
+
+
 def get_robot_pose(config):
     channel_recontruction = StreamChannel(config['broker_uri'])
     subscription = Subscription(channel_recontruction)
     aruco_id = config['aruco_id']
     subscription.subscribe(topic=f"localization.{aruco_id}.aruco")
-
     message = channel_recontruction.consume_last()
     if type(message) != bool:
         f = message.unpack(FrameTransformation)
@@ -49,7 +65,6 @@ def get_robot_pose(config):
         return np.array([x_recontruction, y_recontruction, yaw_rad_recontruction])
     else:
         return message
-
 
 def get_is_points(message,ctx):
     poses = list(message.poses)
@@ -70,18 +85,6 @@ def get_is_points(message,ctx):
     log.info("map completed successfully") 
     return Status(StatusCode.OK)
 
-def send_goal(pose):
-    goal = MoveBaseGoal()
-    goal.target_pose.header.frame_id = 'map' 
-    goal.target_pose.pose.position.x = pose[0]
-    goal.target_pose.pose.position.y = pose[1]
-    radian = pose[2]*(math.pi/180)
-    quaternion = quaternion_from_euler(0, 0, radian)
-    goal.target_pose.pose.orientation.z = quaternion[2]
-    goal.target_pose.pose.orientation.w = quaternion[3]
-    client.send_goal(goal)
-    log.info('setting final position task to  x:{:.2f}, y:{:.2f}, theta: {:.2f}'.format(pose[0],pose[1],pose[2]))
-    client.wait_for_result()
     
 
 # def listener():
@@ -96,39 +99,6 @@ def send_goal(pose):
 #     maprequestreply.map.extend(map_data.data)
 #     return maprequestreply
 
+
 if __name__ == '__main__':
-
-    try:
-        with open(r'../etc/config/config.yaml') as file:
-            config = yaml.load(file, Loader=yaml.FullLoader)
-    except:
-            log.info('Unable to load config file')
-    
-    log = Logger(name='Map')
-    try:
-        channel = Channel(config['broker_uri'])  
-        log.info("connected to broker")
-    except:
-        log.info("Can't connect to broker")
-
-    robot_id = config['robot_id']
-    topic = "IsRosMapping.{}.MapRequest".format(robot_id)
-    subscription = Subscription(channel)   
-    rospy.init_node('send_client_goal')
-    client = actionlib.SimpleActionClient('/move_base', MoveBaseAction)
-    rospy.loginfo("Waiting for move base server")
-    client.wait_for_server()  
-
-    provider = ServiceProvider(channel)
-    logging = LogInterceptor()
-    provider.add_interceptor(logging)
-    
-    provider.delegate(
-        topic = topic,
-        function = get_is_points,
-        request_type = MapRequest,
-        reply_type = Empty)
-
-    provider.run()
-  
-
+    log.warning('Here goes the application of this code not as a service (without the IS requirements)') 
