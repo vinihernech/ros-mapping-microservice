@@ -67,7 +67,7 @@ def get_is_points(message,ctx):
         pose = isframe_to_robotframe([pose],initialPose)
         send_goal(pose[0])
         save_map()
-    #map_reply = listener()
+    #map_reply = listener() # ?
     log.info("map completed successfully") 
     return Status(StatusCode.OK)
 
@@ -76,12 +76,12 @@ def send_goal(pose):
     goal.target_pose.header.frame_id = 'map' 
     goal.target_pose.pose.position.x = pose[0]
     goal.target_pose.pose.position.y = pose[1]
-    radian = pose[2]*(3.14/180)
+    radian = pose[2]*(math.pi/180)
     quaternion = quaternion_from_euler(0, 0, radian)
     goal.target_pose.pose.orientation.z = quaternion[2]
     goal.target_pose.pose.orientation.w = quaternion[3]
     client.send_goal(goal)
-    print('setting final position task to  x:{:.2f}, y:{:.2f}, theta: {:.2f}'.format(pose[0],pose[1],pose[2]))
+    log.info('setting final position task to  x:{:.2f}, y:{:.2f}, theta: {:.2f}'.format(pose[0],pose[1],pose[2]))
     client.wait_for_result()
     
 
@@ -103,7 +103,7 @@ if __name__ == '__main__':
         with open(r'../etc/config/config.yaml') as file:
             config = yaml.load(file, Loader=yaml.FullLoader)
     except:
-            print('Unable to load config file')
+            log.info('Unable to load config file')
     
     log = Logger(name='Map')
     try:
