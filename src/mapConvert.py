@@ -1,3 +1,6 @@
+# o que esse codigo faz? o que ele esta fazendo aqui?
+# delete-o ou mova para outro lugar, onde faça sentido ter rascunhos
+
 # Python
 import numpy as np
 from math import cos, sin, pi
@@ -7,22 +10,14 @@ from is_msgs.camera_pb2 import FrameTransformation
 
 #  my own
 from streamChannel import StreamChannel
+from utils import rotationZ_matrix
 
-
-def rotationZ_matrix(angle_rad):
-  R = np.array([ 
-               [cos(angle_rad), -sin(angle_rad), 0],
-               [sin(angle_rad),  cos(angle_rad), 0],
-               [0             ,  0             , 1]
-            ])
-  return R
 
 def getPoseReconstruction():
     channel_recontruction = StreamChannel("amqp://10.10.3.188:30000")
     subscription = Subscription(channel_recontruction)
     aruco_id = 5
     subscription.subscribe(topic=f"localization.{aruco_id}.aruco")
-
     message = channel_recontruction.consume_last()
     if type(message) != bool:
         f = message.unpack(FrameTransformation)
