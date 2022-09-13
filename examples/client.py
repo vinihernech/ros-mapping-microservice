@@ -36,7 +36,7 @@ if __name__ == '__main__':
     except:
             print('Unable to load config file')
 
-    path = [ [1.5,-1.5, 90] ,[1.5,1.5,180], [-1,1.5,-90], [-1,-1.5,-90]  ]
+    path = [ [1.5,-1.5, 90], [1.5,1.5,180]]
 
     path_task_robot(path,config)
 
