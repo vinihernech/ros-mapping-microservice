@@ -3,6 +3,7 @@ import yaml
 from is_msgs.camera_pb2 import FrameTransformation
 from is_wire.core import Channel, Message, Subscription, StatusCode, Status, Logger
 from is_wire.rpc import ServiceProvider, LogInterceptor
+
 from is_ros_mapping.maprequest_pb2 import MapRequest
 
 log = Logger(name='Map') 
@@ -28,7 +29,7 @@ def main():
     topic = "IsRosMapping.{}.MapRequest".format(robot_id)
     subscription = Subscription(channel)   
     subscription.subscribe(topic)
-    mapping = IsRosMapping()
+    mapping = IsRosMapping(config)
 
     while True:
         try:
