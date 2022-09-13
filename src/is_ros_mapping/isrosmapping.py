@@ -31,7 +31,7 @@ class IsRosMapping():
         self.log = Logger(name='f{self.topic}')
 
     def get_robot_pose(self,config):
-        print("x_recontruction")
+        self.log.info("x_recontruction")
         channel_recontruction = StreamChannel(config['broker_uri'])
         subscription = Subscription(channel_recontruction)
         aruco_id = config['aruco_id']
@@ -43,8 +43,9 @@ class IsRosMapping():
             x_recontruction = pose.position.x
             y_recontruction = pose.position.y
             yaw_rad_recontruction = pose.orientation.yaw
-            print(x_recontruction)
+            self.log.info(x_recontruction)
             return np.array([x_recontruction, y_recontruction, yaw_rad_recontruction])
+        # else: ?
 
     def reset_map(self):
         rospy.wait_for_service('/reset_map')
@@ -75,15 +76,15 @@ class IsRosMapping():
         self.log.info('setting final position task to  x:{:.2f}, y:{:.2f}, theta: {:.2f}'.format(pose[0],pose[1],pose[2]))
         client.wait_for_result()
 
-    def modify_yaml_file(self, map_name, initial_pose):
+    def modify_yaml_file(self, map_name, initial_pose,map_path ='../etc/maps/{}.yaml'):
         try:
-            with open(r'../etc/maps/{}.yaml'.format(map_name), 'r+') as file:
+            with open(map_path.format(map_name), 'r+') as file:
                 documents = yaml.safe_load(file)
                 documents['is_origin'] = initial_pose.tolist()
-            with open(r'../etc/maps/{}.yaml'.format(map_name), 'w') as file:
+            with open(map_path.format(map_name), 'w') as file:
                 yaml.dump(documents, file, default_flow_style=None)
         except Exception as e:
-            print(e)
+            self.log.warn(e)
 
     def run(self,message):
         poses = list(message.poses)
