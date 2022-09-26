@@ -1,37 +1,7 @@
 free_thresh: 0.196
-image: /home/labsea6/Documents/ros-mapping-microservice/etc/maps/my_map0_3.pgm
-is_origin: !!python/object/apply:numpy.core.multiarray._reconstruct
-  args:
-  - !!python/name:numpy.ndarray ''
-  - !!python/tuple
-    - 0
-  - !!binary |
-    Yg==
-  state: !!python/tuple
-  - 1
-  - !!python/tuple
-    - 3
-  - !!python/object/apply:numpy.dtype
-    args:
-    - f8
-    - false
-    - true
-    state: !!python/tuple
-    - 3
-    - <
-    - null
-    - null
-    - null
-    - -1
-    - -1
-    - 0
-  - false
-  - !!binary |
-    AAAAgPyc2D8AAAAA6zyrvwAAAIBW2Js/
+image: /home/labsea6/Documents/ros-mapping-microservice/etc/maps/my_map0_2.pgm
+is_origin: [0, 0, 0]
 negate: 0
 occupied_thresh: 0.65
-origin:
-- -12.849999
-- -12.849999
-- 0.0
+origin: [-12.849999, -12.849999, 0.0]
 resolution: 0.1

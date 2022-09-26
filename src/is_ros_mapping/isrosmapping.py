@@ -37,15 +37,14 @@ class IsRosMapping():
         aruco_id = config['aruco_id']
         subscription.subscribe(topic=f"reconstruction.{aruco_id}.ArUco")
         message = channel_recontruction.consume_last()
-
         if type(message) != bool:
             pose = message.unpack(Pose)
             x_recontruction = pose.position.x
             y_recontruction = pose.position.y
             yaw_rad_recontruction = pose.orientation.yaw
-            self.log.info(x_recontruction)
             return np.array([x_recontruction, y_recontruction, yaw_rad_recontruction])
-        # else: ?
+        else: 
+            return np.array([0,0,0])
 
     def reset_map(self):
         rospy.wait_for_service('/reset_map')
