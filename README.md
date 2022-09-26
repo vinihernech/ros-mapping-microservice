@@ -12,6 +12,10 @@ A python script stores the robot's initial pose and a transformation is done to 
 ## ROS
 In the ROS part, a launch file initializes HectorSLAM with the settings chosen by the user. These settings consist of map size, resolution and something like that, and these are available in the Deployment file. 
 
+<p align="center">
+<img src= "https://msadowski.github.io/images/slam_toolbox_odom.gif" width=750>
+</p>
+
 # Dependences 
 
 [Is-reconstruction](https://github.com/matheusdutra0207/is-reconstruction): Estimate the 3D poses of the ArUco Markers.
@@ -24,6 +28,10 @@ In the ROS part, a launch file initializes HectorSLAM with the settings chosen b
 | Name | ⇒ Input | Output  ⇒ | Description |
 | ---- | ------- | --------- | ----------- |
 | IsRosMapping | :incoming_envelope: **topic:** `IsRosMapping.{robot_id}.MapRequest` <br> :gem: **schema:** MapRequest| :incoming_envelope: **topic:**  `move_base/goal` <br> :gem: **schema:** [MoveBaseGoal](http://docs.ros.org/en/groovy/api/move_base_msgs/html/msg/MoveBaseGoal.html) | It receives exploration points in the PIS referential and sends them to the [ROS navigation stack](http://wiki.ros.org/move_base).|
+
+## Map saver
+
+The map is automatically saved at the end of the process on an NFS server available on the main cluster.
 
 ## Configuration :gear:
 
