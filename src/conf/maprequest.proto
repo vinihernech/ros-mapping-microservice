@@ -16,13 +16,3 @@ message MappingRequest{
     repeated common.Pose poses = 2;
 }
 
-message MapRequestReply{
-
-    uint64 id = 1;
-    float map_resolution =2;
-    uint32 width = 3;
-    uint32 height = 4;
-    common.Pose origin = 5;
-    repeated int64 map = 6;
-
-}
