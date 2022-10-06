@@ -5,13 +5,13 @@ from is_msgs.camera_pb2 import FrameTransformation,FrameTransformations
 from is_wire.core import Channel, Message, Logger,Status,StatusCode, Subscription
 from is_wire.rpc import ServiceProvider, LogInterceptor
 from google.protobuf.empty_pb2 import Empty
-from maprequest_pb2 import MapRequest, MapRequestReply
+from maprequest_pb2 import MappingRequest
 
 
 
 def path_task_robot(path, config):
     cons_channel = Channel(config['broker_uri'])
-    topic = "IsRosMapping.{}.MapRequest".format(config['robot_id'])
+    topic = "IsRosMapping.{}.MappingRequest".format(config['robot_id'])
     pathlist = []
     
     for x,y,theta in path:
@@ -21,7 +21,7 @@ def path_task_robot(path, config):
         pose.orientation.yaw = theta
         pathlist.append(pose)
     
-    task = MapRequest()
+    task = MappingRequest()
     task.id = 0
     task.poses.extend(pathlist)
     message = Message(content=task)
@@ -36,7 +36,7 @@ if __name__ == '__main__':
     except:
             print('Unable to load config file')
 
-    path = [ [1.5,-1.5, 90], [1.5,1.5,180]]
+    path = [[1.5,1.5,90]]
 
     path_task_robot(path,config)
 

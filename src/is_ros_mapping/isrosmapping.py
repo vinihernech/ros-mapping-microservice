@@ -13,7 +13,6 @@ from is_wire.rpc import ServiceProvider, LogInterceptor
 from is_ros_mapping.streamChannel import StreamChannel
 from std_srvs.srv import Trigger, TriggerRequest
 from is_ros_mapping.utils import  isframe_to_robotframe
-from is_ros_mapping.maprequest_pb2 import MapRequest
 import roslaunch
 import time
 
@@ -23,7 +22,7 @@ class IsRosMapping():
         self.config = config
         self.is_reconstruction = config['is_reconstruction']
         self.robot_id = config['robot_id']
-        self.topic = "IsRosMapping.{}.MapRequest".format(self.robot_id)
+        self.topic = "IsRosMapping.{}.MappingRequest".format(self.robot_id)
         rospy.init_node('send_client_goal')
         self.client = actionlib.SimpleActionClient('/move_base', MoveBaseAction)
         rospy.loginfo("Waiting for move base server")
@@ -104,7 +103,7 @@ class IsRosMapping():
             self.send_goal(pose[0],self.client)
             self.save_map(f'{message.id}_{i}')
         time.sleep(3)
-        self.modify_yaml_file(f'my_map{message.id}_{i}',initialPose)
         self.log.info("map completed successfully")
         self.client.cancel_all_goals()
+        #self.modify_yaml_file(f'my_map{message.id}_{i}',initialPose)
         return Status(StatusCode.OK)

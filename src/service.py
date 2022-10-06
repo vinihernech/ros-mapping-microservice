@@ -4,7 +4,7 @@ from is_msgs.camera_pb2 import FrameTransformation
 from is_wire.core import Channel, Message, Subscription, StatusCode, Status, Logger
 from is_wire.rpc import ServiceProvider, LogInterceptor
 
-from is_ros_mapping.maprequest_pb2 import MapRequest
+from is_ros_mapping.maprequest_pb2 import MappingRequest
 
 log = Logger(name='Map') 
 
@@ -26,7 +26,7 @@ def main():
         log.info("can't connect to broker")
 
     robot_id = config['robot_id']
-    topic = "IsRosMapping.{}.MapRequest".format(robot_id)
+    topic = "IsRosMapping.{}.MappingRequest".format(robot_id)
     subscription = Subscription(channel)   
     subscription.subscribe(topic)
     mapping = IsRosMapping(config)
@@ -34,11 +34,10 @@ def main():
     while True:
         try:
             message = channel.consume()
-            msg_unpack = message.unpack(MapRequest)
+            msg_unpack = message.unpack(MappingRequest)
             mapping.run(msg_unpack)
         except:
             pass
-     
-        
+         
 if __name__ == '__main__':
     main()
