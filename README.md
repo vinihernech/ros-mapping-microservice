@@ -27,7 +27,7 @@ In the ROS part, a launch file initializes HectorSLAM with the settings chosen b
 ## Streams:
 | Name | ⇒ Input | Output  ⇒ | Description |
 | ---- | ------- | --------- | ----------- |
-| IsRosMapping | :incoming_envelope: **topic:** `IsRosMapping.{robot_id}.MapRequest` <br> :gem: **schema:** MapRequest| :incoming_envelope: **topic:**  `move_base/goal` <br> :gem: **schema:** [MoveBaseGoal](http://docs.ros.org/en/groovy/api/move_base_msgs/html/msg/MoveBaseGoal.html) | It receives exploration points in the PIS referential and sends them to the [ROS navigation stack](http://wiki.ros.org/move_base).|
+| IsRosMapping | :incoming_envelope: **topic:** `IsRosMapping.{robot_id}.MappingRequest` <br> :gem: **schema:** MappingRequest| :incoming_envelope: **topic:**  `move_base/goal` <br> :gem: **schema:** [MoveBaseGoal](http://docs.ros.org/en/groovy/api/move_base_msgs/html/msg/MoveBaseGoal.html) | It receives exploration points in the PIS referential and sends them to the [ROS navigation stack](http://wiki.ros.org/move_base).|
 
 ## Map saver
 
