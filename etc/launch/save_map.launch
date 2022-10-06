@@ -2,7 +2,7 @@
 
  <arg name="map_id" default="0"/>
  <arg name="map_1" default="/map"/>
- <node name="map_saver1" pkg="map_server" type="map_saver" args="-f /home/labsea6/Documents/ros-mapping-microservice/etc/maps/my_map$(arg map_id)">
+ <node name="map_saver1" pkg="map_server" type="map_saver" args="-f /opt/is_ros_mapping/maps/my_map$(arg map_id)">
         <remap from="/map" to="$(arg map_1)"/>
 
   </node>

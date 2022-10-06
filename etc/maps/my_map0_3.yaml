@@ -1,7 +1,0 @@
-free_thresh: 0.196
-image: /home/labsea6/Documents/ros-mapping-microservice/etc/maps/my_map0_2.pgm
-is_origin: [0, 0, 0]
-negate: 0
-occupied_thresh: 0.65
-origin: [-12.849999, -12.849999, 0.0]
-resolution: 0.1

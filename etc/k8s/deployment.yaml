@@ -14,8 +14,8 @@ data:
     update_factor_occupied: 0.9
     map_update_distance_thresh: 0.4
     map_update_angle_thresh: 0.06
+    odom_frame: "odom"
 ---
-
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -27,28 +27,45 @@ spec:
       labels:
         app: is-ros-mapping
     spec:
+      volumes:
+        - name: nfs
+          persistentVolumeClaim:
+            claimName: nfs-claim1
+        - name: ros-mapping-volume
+          configMap:
+            name: ros-mapping-config
+            items:
+            - key: config
+              path: hector_params.yaml
       containers:
-      - name: service
+      - name: hector-slam
         image: vinihernech/ros_mapping_microsservice:v5
         args:
           - roslaunch
           - hector.launch
         env:
         - name: ROS_MASTER_URI
-          value: http://10.10.3.188:11311
+          value: http://10.10.3.188:30015
         - name: ROS_IP
           value: 10.10.3.188
         imagePullPolicy: IfNotPresent
         volumeMounts:
           - name: ros-mapping-volume
-            mountPath: /opt/ros/noetic/share/hector_slam_launch/launch/ros_mapping_config
-      volumes:
-      - name: ros-mapping-volume
-        configMap:
-          name: ros-mapping-config
-          items:
-          - key: config
-            path: hector_params.yaml
+            mountPath: /opt/ros/noetic/share/hector_slam_launch/launch/ros_mapping_config           
+      - name: is-mapping
+        image: vinihernech/ros_mapping_microservice:v2
+        env:
+        - name: ROS_MASTER_URI
+          value: http://10.10.3.188:30015
+        - name: ROS_IP
+          value: 10.10.3.188
+        args:
+          - python3
+          - service.py
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+          - mountPath: "/opt/is_ros_mapping/maps"
+            name: nfs
       hostNetwork: true
 
 

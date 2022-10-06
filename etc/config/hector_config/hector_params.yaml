@@ -7,3 +7,4 @@ update_factor_free: 0.4
 update_factor_occupied: 0.9 
 map_update_distance_thresh: 0.4
 map_update_angle_thresh: 0.06
+odom_frame: "odom"
