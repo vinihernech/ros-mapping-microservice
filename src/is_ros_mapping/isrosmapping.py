@@ -59,9 +59,11 @@ class IsRosMapping():
         roslaunch.configure_logging(uuid)
         launch = roslaunch.parent.ROSLaunchParent(uuid, roslaunch_file)
         launch.start()
-        launch.spin()
+        rospy.sleep(5)
+        launch.shutdown()
 
-    def send_goal(self, pose, client):
+
+    def send_goal(self, pose):
         goal = MoveBaseGoal()
         goal.target_pose.header.frame_id = 'map' 
         goal.target_pose.pose.position.x = pose[0]
@@ -70,9 +72,9 @@ class IsRosMapping():
         quaternion = quaternion_from_euler(0, 0, radian)
         goal.target_pose.pose.orientation.z = quaternion[2]
         goal.target_pose.pose.orientation.w = quaternion[3]
-        client.send_goal(goal)
+        self.client.send_goal(goal)
         self.log.info('setting final position task to  x:{:.2f}, y:{:.2f}, theta: {:.2f}'.format(pose[0],pose[1],pose[2]))
-        client.wait_for_result()
+        self.client.wait_for_result()
 
     def modify_yaml_file(self, map_name, initial_pose,map_path ='../etc/maps/{}.yaml'):
         try:
@@ -100,10 +102,11 @@ class IsRosMapping():
             theta = poses[i].orientation.yaw
             pose = [x,y,theta]
             pose = isframe_to_robotframe([pose],initialPose)
-            self.send_goal(pose[0],self.client)
+            self.send_goal(pose[0])
             self.save_map(f'{message.id}_{i}')
         time.sleep(3)
         self.log.info("map completed successfully")
         self.client.cancel_all_goals()
-        #self.modify_yaml_file(f'my_map{message.id}_{i}',initialPose)
+        self.client.wait_for_result(rospy.Duration(1))
+        self.modify_yaml_file(f'my_map{message.id}_{i}',initialPose)
         return Status(StatusCode.OK)
