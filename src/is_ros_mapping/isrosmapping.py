@@ -13,6 +13,7 @@ from is_wire.rpc import ServiceProvider, LogInterceptor
 from is_ros_mapping.streamChannel import StreamChannel
 from std_srvs.srv import Trigger, TriggerRequest
 from is_ros_mapping.utils import  isframe_to_robotframe
+import threading
 import roslaunch
 import time
 
@@ -61,6 +62,7 @@ class IsRosMapping():
         launch.start()
         rospy.sleep(5)
         launch.shutdown()
+        
 
 
     def send_goal(self, pose):
@@ -76,15 +78,13 @@ class IsRosMapping():
         self.log.info('setting final position task to  x:{:.2f}, y:{:.2f}, theta: {:.2f}'.format(pose[0],pose[1],pose[2]))
         self.client.wait_for_result()
 
-    def modify_yaml_file(self, map_name, initial_pose,map_path ='../etc/maps/{}.yaml'):
-        try:
-            with open(map_path.format(map_name), 'r+') as file:
-                documents = yaml.safe_load(file)
-                documents['is_origin'] = initial_pose.tolist()
-            with open(map_path.format(map_name), 'w') as file:
-                yaml.dump(documents, file, default_flow_style=None)
-        except Exception as e:
-            self.log.warn(e)
+    def modify_yaml_file(self, map_name, initial_pose,map_path ='../etc/maps/{}.yaml'):          
+        with open(map_path.format(map_name), 'r+') as file:
+            documents = yaml.safe_load(file)
+            documents['is_origin'] = initial_pose
+        with open(map_path.format(map_name), 'w') as file:
+            yaml.dump(documents, file, default_flow_style=None)
+
 
     def run(self,message):
         poses = list(message.poses)
@@ -97,16 +97,16 @@ class IsRosMapping():
         self.reset_map()
         self.log.info("starting a new mapping ...")
         for i in range(len(poses)):
-            x = poses[i].position.x
-            y = poses[i].position.y
-            theta = poses[i].orientation.yaw
-            pose = [x,y,theta]
-            pose = isframe_to_robotframe([pose],initialPose)
-            self.send_goal(pose[0])
-            self.save_map(f'{message.id}_{i}')
+                x = poses[i].position.x
+                y = poses[i].position.y
+                theta = poses[i].orientation.yaw
+                pose = [x,y,theta]
+                pose = isframe_to_robotframe([pose],initialPose)
+                self.send_goal(pose[0])
+                self.save_map(f'{message.id}_{i}')
         time.sleep(3)
         self.log.info("map completed successfully")
         self.client.cancel_all_goals()
-        self.client.wait_for_result(rospy.Duration(1))
-        self.modify_yaml_file(f'my_map{message.id}_{i}',initialPose)
+        x = threading.Thread(target=self.modify_yaml_file, kwargs={"map_name": f'my_map{message.id}_{i}',"initial_pose": initialPose})
+        x.start()
         return Status(StatusCode.OK)
