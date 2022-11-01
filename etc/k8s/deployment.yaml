@@ -53,7 +53,7 @@ spec:
           - name: ros-mapping-volume
             mountPath: /opt/ros/noetic/share/hector_slam_launch/launch/ros_mapping_config           
       - name: is-mapping
-        image: vinihernech/ros_mapping_microservice:v2
+        image: vinihernech/ros_mapping_microservice:v3
         env:
         - name: ROS_MASTER_URI
           value: http://10.10.3.188:30015
