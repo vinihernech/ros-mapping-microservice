@@ -1,0 +1,33 @@
+{
+    "broker_uri": "amqp://10.10.3.188:30000",
+    "mapped_area": {
+        "area_id": 0,
+        "area_name": "labsea",
+        "area_map": {
+            "point_1": {
+                "x":4.43, 
+                "y": 5.06
+            },
+            "point_2": {
+                "x": 4.43,
+                "y": -4.74
+            },
+            "point_3": {
+                "x": -4.6,
+                "y": -4.73
+            },
+            "point_4": {
+                "x": -4.6,
+                "y": 5.06
+            }
+        },
+        "obstacles": {
+            "obstacle_1": {
+                "x_min": -0.0,
+                "x_max": -0.0,
+                "y_min": -0.0,
+                "y_max": -0.0
+            }
+        }
+    }
+}
